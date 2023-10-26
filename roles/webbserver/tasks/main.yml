@@ -1,0 +1,31 @@
+---
+- name: Make sure the latest version of Apache(httpd) is installed
+  package:
+    name: httpd
+    state: latest
+- name: Start Apache at boot
+  service:
+    name: httpd
+    enabled: yes
+    state: started
+
+- name: Define a vhost
+  copy:
+    src: "filer/my_vhost.conf"
+    dest: "/etc/httpd/conf.d/my_vhost.conf"
+  notify: Restart Apache
+  register: vhost_result
+
+
+- name: Creating directory for yesbox.org
+  file:
+    path: "/var/www/yesbox.org"
+    state: directory
+    owner: apache
+    group: apache
+
+- name: Copy static index.html page
+  ansible.builtin.copy:
+    src: "filer/index.html"
+    dest: "/var/www/yesbox.org/index.html"
+  when: vhost_result.changed

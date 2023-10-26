@@ -1,0 +1,26 @@
+---
+- name: Make sure latest version of MariaDB is installed
+  yum:
+    name: mariadb-server
+    state: latest
+
+- name: Start MariaDB at boot
+  service:
+    name: mariadb
+    enabled: yes
+    state: started
+
+- name: Install MySQL-Python package
+  yum:
+    name: MySQL-python
+    state: present
+
+- name: Creating database 'webbappdb'
+  community.mysql.mysql_db:
+    name: webbappdb
+    state: present
+
+- name: Create database user 'webbappuser'
+  mysql_user:
+    name: webbappuser
+    password: 'secretpassword'
